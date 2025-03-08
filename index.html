@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Maths</title>
+    <link rel="icon" type="images/png" href="thum1.png">
+    <style>
+        body{
+            margin: 0;
+        }
+        a , p , span {
+            border: none;
+            border-radius: 15px;
+        }
+                .ft1 , input, button {
+            font-family: "Atkinson Hyperlegible Next", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+        }
+        #selection-box {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .it1::-webkit-outer-spin-button,.it1::-webkit-inner-spin-button {
+            appearance: none;
+        }
+        .it1 {
+            width: 80px;
+            height: 50px;
+            border: 2px solid black;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 40px;
+            font-weight: 900;
+        }
+        .ca1 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .bt1 {
+            width: 100px;
+            height: 50px;
+            border: none;
+            border-radius: 15px;
+            font-weight: 900;
+            transition: 0.5s;
+            cursor: pointer;
+        }
+        .bt1:hover {
+            filter: brightness(80%);
+        }
+        #main-box {
+            width: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body class="ft1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next&display=swap" rel="stylesheet">
+        <!--JS stuff:
+            scoreos = ttp1.offsetTop
+            po = window.pageYOffset
+        -->
+        <p style="font-size: 50px;font-weight: 900;text-align: center;">Mental Maths</p>
+        <p style="font-weight: 900;text-align: center;" id="score">How good are u in mental maths?Let's find out!!Also,only integers</p>
+        <p style="font-weight: 900;text-align: center;" id="rank">Rank: Noobie🙄</p>
+        <div id="selection-box">
+            <input type="number" class="it1" placeholder="Min" id="min1">&nbsp;
+            <input type="number" class="it1" placeholder="Max" id="max1">
+        </div><br>
+        <div class="ca1" id="signa"><input type="checkbox" id="+" checked><a style="font-weight: 900;">+</a>&nbsp;<input type="checkbox" id="-" checked><a style="font-weight: 900;">-</a>&nbsp;<input type="checkbox" id="*" checked><a style="font-weight: 900;">*</a>&nbsp;<input type="checkbox" id="/" checked><a style="font-weight: 900;">/</a></div><br>
+        <div class="ca1" id="sb"><button class="bt1" onclick="check1()">Start</button>&nbsp;<button class="bt1" onclick="credits()">Credits</button>&nbsp;<button class="bt1" onclick="ar()">About Rank🏆</button></div>
+        <br>
+        <div id="main-box">
+            <div style="width: 80%;display: block;">
+                <div class="ca1"><a style="font-weight: 900;font-size: 30px;" id="qs1">zz</a></div>
+                <br><div class="ca1"><input type="number" class="inp1 it1" placeholder="Ans?" id="inp2" onkeydown="check2(event.key)"></div>
+                <br><div class="ca1"><button class="bt1" onclick="ans1()" >Enter</button>&nbsp;<button class="bt1" onclick="exit1()">Exit</button></div>
+            </div>
+        </div>
+        <script src="vif.js"></script>
+        <script>
+            /*
+            All Ranks:
+                Noobie🙄
+                Decent🙂
+                Pro😎
+                Computer🤖
+            */
+            var tips = [
+                "Start off with easy",
+                "Take time if ur unsure of ur answer",
+                "Try getting more faster",
+                "Use ENTER key to progress faster(when u have selected the input box)",
+                "Practice regularly :)",
+                "Read question carefully",
+                "Best of Luck :)"
+            ]
+            var rank = ""
+            var rl = 0;//Rank level
+            var noq = 0;//no of qs.
+            var correct = 0;
+            var wrong = 0;
+            var ui = 0;//User Input
+            var streak = 0;//Streak :)
+            var lstreak = 0;//Longest streak
+            var cr = 0;
+            var wr = 0;
+            var max = 0;
+            var min = 0;
+            var no1 = 0;
+            var no2  = 0;
+            var no3 = 0;
+            var no4 = 0;
+            var uc1  = []//User choice
+            var tuc = []//Temporary user choice
+            var ae = ["*","+","-","/"]
+            var e1 = "";
+            var e2 = "";
+            var e3 = "";
+            var at = [];//All time recorded
+            var lt = 0;
+            var ans = 0;//Answer
+            var avg = 0;//Average time 
+            var qt = 0;//Question type
+            var kc = 0;//Can count?
+            var tt = 0;//time spent in each qs
+            var rt1;//Timeout 1
+            var md = 0;//Max difficulty
+            var add1 = false;//Add
+            var sub1 = false;//Sub
+            var mul1 = false;//Mul
+            var div1 = false;//Div
+            var nos = 0;//No of signs
+            var rankls = localStorage.rank
+            if(rankls === false || rankls === undefined) {
+                localStorage.rank = "Noobie🙄"
+            }
+            check_rank(localStorage.rank)
+            function check1() {
+                max = parseInt(document.getElementById("max1").value);
+                min = parseInt(document.getElementById("min1").value);
+                if(isNaN(max) || isNaN(min) || min >= max) {
+                    //Max != 0
+                    //Min != 0
+                    // Min !> Max
+                    alert("Something is wrong😭😭Make sure everything is correct")
+                }
+                else{
+                    var q1 = prompt("Choose difficulty(based on no):\n1.Easy, 2.Medium, 3.Hard")
+                    if(q1 === "1") {
+                        uc1 = []
+                        tuc = [];
+                        nos = 0;
+                        md=2;
+                        setup()
+                    }
+                    else if(q1 === "2") {
+                        uc1 = []
+                        tuc = [];
+                        nos = 0;
+                        md=4;
+                        setup()
+                    }
+                    else if(q1 === "3") {
+                        uc1 = []
+                        tuc = [];
+                        nos = 0; 
+                        md=5;
+                        setup()
+                    }
+                    else if(q1 === null) {}
+                    else {
+                        uc1 = []
+                        tuc = [];
+                        nos = 0;
+                        md=3;
+                        setup()
+                    }
+                }
+        
+            }
+            function setup() {
+                //Signs setup
+                add1 = document.getElementById("+").checked;
+                sub1 = document.getElementById("-").checked;
+                mul1 = document.getElementById("*").checked;
+                div1 = document.getElementById("/").checked;
+                if(add1) {nos+=1;tuc.push("+")}
+                if(sub1) {nos+=1;tuc.push("-")}
+                if(mul1) {nos+=1;tuc.push("*")}
+                if(div1) {nos+=1;tuc.push("/")}
+                noq = 0;//no of qs.
+                correct = 0;
+                wrong = 0;
+                ui = 0;//User Input
+                streak = 0;//Streak :)
+                lstreak = 0;
+                cr = 0;
+                wr = 0;
+                no1 = 0;
+                no2  = 0;
+                no3 = 0;
+                no4 = 0;
+                e1 = "";
+                e2 = "";
+                e3 = "";
+                at = [];//All time recorded
+                lt = 0;
+                ans = 0;//Answer
+                avg = 0;//Average time 
+                qt = 0;//Question type
+                kc = 0;//Can count?
+                tt = 0;//time spent in each qs
+                rt1;//Timeout 1
+                document.getElementById("score").innerHTML = "💡Tips: " + tips[Math.floor(Math.random()*7)]
+                document.getElementById("sb").style.display = "none"
+                document.getElementById("signa").style.display = "none"
+                document.getElementById("main-box").style.display = "flex"
+                document.getElementById("selection-box").style.display = "none"
+                start()
+            }
+        function start() {
+            document.getElementById("inp2").select()
+                generate_qs()
+        }
+        function generate_qs() {
+            uc1 = [];
+            if(nos === 1) {
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[0])
+                }
+                else if(nos=== 2) {
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[1])
+                    uc1.push(tuc[1])
+                }
+                else if(nos === 3) {
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[1])
+                    uc1.push(tuc[2])
+                    uc1.push(tuc[Math.floor(Math.random()*3)])
+                }
+                else if(nos === 4){
+                    uc1.push(tuc[0])
+                    uc1.push(tuc[1])
+                    uc1.push(tuc[2])
+                    uc1.push(tuc[3])
+                }
+                else if(nos === 0){
+                    nos = 4
+                    uc1.push("+")
+                    uc1.push("-")
+                    uc1.push("*")
+                    uc1.push("/")
+                }
+            ae = uc1
+            document.getElementById("inp2").value = ""
+            tt = 0;
+            qt = Math.floor(Math.random()*md)+1
+            if(qt === 1 || qt==2) {
+                no1 = Math.floor(Math.random()*(max - min + 1)) + min
+                no2 = Math.floor(Math.random()*(max - min + 1)) + min
+                e1 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e1),1)
+                ans = parseInt(math.evaluate(String(no1)+e1+String(no2)))
+                console.log("Ans "+ ans)
+                document.getElementById("qs1").innerHTML = (noq+1)+ ": " + no1 + " " + e1 + " " + no2;
+                kc = 1;
+                st1()
+            }
+            else if(qt===3 || qt===4) {
+                no1 = Math.floor(Math.random()*(max - min + 1)) + min
+                no2 = Math.floor(Math.random()*(max - min + 1)) + min
+                no3 = Math.floor(Math.random()*(max - min + 1)) + min
+                e1 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e1),1)
+                e2 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e2),1)
+                ans = parseInt(math.evaluate(`${no1}${e1}${no2}${e2}${no3}`));
+                console.log("Ans "+ ans)
+                document.getElementById("qs1").innerHTML = (noq+1)+ ": " + no1 + " " + e1 + " " + no2 + " "+ e2 +" "+ no3;
+                kc = 1;
+                st1()
+            }
+            else {
+                no1 = Math.floor(Math.random()*(max - min + 1)) + min
+                no2 = Math.floor(Math.random()*(max - min + 1)) + min
+                no3 = Math.floor(Math.random()*(max - min + 1)) + min
+                no4 = Math.floor(Math.random()*(max - min + 1)) + min
+                e1 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e1),1)
+                e2 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e2),1)
+                e3 = ae[Math.floor(Math.random()*ae.length)]
+                ae.splice(ae.indexOf(e3),1)
+                ans = parseInt(math.evaluate(`${no1}${e1}${no2}${e2}${no3}${e3}${no4}`));
+                console.log("Ans "+ ans)
+                document.getElementById("qs1").innerHTML = (noq+1)+ ": " + no1 + " " + e1 + " " + no2 + " "+ e2 +" "+ no3 + " " + e3 + " " + no4;
+                kc = 1;
+                st1()
+            }
+        }
+        function check2(key) {
+            if (key==="Enter") {
+                ans1()
+            }
+        }
+        function st1() {
+            if (kc === 1) {
+                rt1 = setTimeout(ic1,1000)
+            }
+            else{
+                clearTimeout(rt1)
+            } 
+        }
+        function ic1() {
+            if (kc=== 1) {
+                tt += 1
+                st1()
+            }
+        }
+        function ans1() {
+            ui = parseInt(document.getElementById("inp2").value);
+            if (ui === ans) {
+                noq += 1 
+                correct += 1;
+                clearTimeout(rt1);
+                kc=0;
+                if(noq===1) {
+                    lt = tt
+                }
+                if(tt < lt) {
+                    lt = tt
+                }
+                document.getElementById("score").innerHTML = "You got the last answer right.<br>Answer was: " + ans
+                streak += 1
+                at.push(tt);
+                generate_qs();
+            }
+            else{
+                noq += 1 
+                wrong+= 1;
+                clearTimeout(rt1);
+                kc=0;
+                if(noq===1) {
+                    lt = tt
+                }
+                if(tt < lt) {
+                    lt = tt
+                }
+                if(streak > lstreak) {
+                    lstreak = streak
+                }
+                document.getElementById("score").innerHTML = "You got the last answer wrong.<br>Answer was: " + ans + "<br>U wrote: " + ui
+                streak = 0
+                at.push(tt);
+                generate_qs();
+            }
+        }
+        function exit1() {
+            clearTimeout(rt1);
+            kc = 0;
+            if(streak > lstreak) {
+                    lstreak = streak
+            }
+            show() 
+        }
+        function show() {
+            document.getElementById("sb").style.display = "flex"
+            document.getElementById("signa").style.display = "flex"
+            document.getElementById("main-box").style.display = "none"
+            document.getElementById("selection-box").style.display = "flex"
+            estimate_score()
+        }
+        function estimate_score() {
+            document.getElementById("score").innerHTML = "Score:"
+            if(at.length === 0) {
+                at.push(0)
+            }
+            var fsum = "0"
+            var i = 0;
+            
+            while(i < at.length) {
+                fsum += "+" + String(at[i])
+                console.log(fsum)
+                i += 1
+            }
+            var sum = math.evaluate(fsum)
+            avg = parseFloat((sum/noq).toFixed(2))
+            cr = parseFloat((correct/noq * 100).toFixed(2))
+            wr = parseFloat((wrong/noq * 100).toFixed(2))
+            console.log("Average: " + avg)
+            if(noq > 9) {
+                document.getElementById("score").innerHTML += "<br>No of questions attended: <span style='background:yellow'>" + noq + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>No of questions attended: " + noq 
+            }
+            if(correct/noq*100 >= 60) {
+                document.getElementById("score").innerHTML += "<br>No of questions correct: <span style='background:yellow'>" + correct + "</span>"  
+            } 
+            else {
+                document.getElementById("score").innerHTML += "<br>No of questions correct: " + correct   
+            }
+            if(wrong/noq*100 <= 40) {
+                document.getElementById("score").innerHTML += "<br>No of answers wrong: <span style='background:yellow'>" + wrong + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>No of answers wrong: " + wrong  
+            }
+            if(avg < 3) {
+                document.getElementById("score").innerHTML += "<br>Average time taken: <span style='background:yellow'>" + avg + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>Average time taken: " + avg  
+            }
+            if(lt < 1.5) {
+                document.getElementById("score").innerHTML += "<br>Least time taken: <span style='background:yellow'>" + lt + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>Least time taken: " + lt   
+            }
+            if(streak > 6) {
+                document.getElementById("score").innerHTML += "<br>Streak: <span style='background:yellow'>" + streak + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>Streak: " + streak  
+            }
+            if(lstreak > 6) {
+                document.getElementById("score").innerHTML += "<br>Longest Streak: <span style='background:yellow'>" + lstreak + "</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>Longest Streak: " + lstreak  
+            }
+            if(cr >= 60) {
+                document.getElementById("score").innerHTML += "<br>Correct Rate%: <span style='background:yellow'>" + cr + "%</span>"  
+            } 
+            else {
+                document.getElementById("score").innerHTML += "<br>Correct Rate%: " + cr + "%"   
+            }
+            if(wr <= 40) {
+                document.getElementById("score").innerHTML += "<br>Incorrect Rate%: <span style='background:yellow'>" + wr + "%</span>"  
+            }
+            else {
+                document.getElementById("score").innerHTML += "<br>Inorrect Rate%: " + wr + "%"
+            }
+            estimate_rank()
+        }
+        function estimate_rank() {
+            var rankls = localStorage.rank
+            if(rankls === false || rankls === undefined) {
+                localStorage.rank = "Noobie🙄"
+                rl = 1
+            }
+            //Computer
+            if(noq > 30 && correct > 29 && cr > 95 && streak > 29 && nos === 4 && max > 14 && lt < 1.10 && avg < 2 && md > 4) {
+                if (rl !==4) {
+                    rl = 4
+                    localStorage.rank = "Computer🤖"
+                }
+            }
+            else if (noq > 20 && correct > 19 && cr > 90 && streak > 19 && nos > 2 && lt <1.10 && max > 5 && md > 3) {
+                if (rl !==3 && rl < 4) {
+                    rl = 3
+                    localStorage.rank = "Pro😎"
+                }
+            }
+            else if (noq > 10 && correct > 10 && cr > 85 && streak > 10 && nos > 0 && lt < 2 && max > 2 ) {
+                if (rl !==2 && rl < 3) {
+                    rl = 2
+                    localStorage.rank = "Decent🙂"
+                }
+            }
+            else {
+            }
+            update_rank()
+        }
+        function update_rank() {
+            if(rl === 1) {
+                document.getElementById("rank").innerHTML = "Rank: Noobie🙄"
+            }
+            else if(rl===2) {
+                document.getElementById("rank").innerHTML = "Rank: Decent🙂"
+            }
+            else if (rl ===3) {
+                document.getElementById("rank").innerHTML = "Rank: Pro😎"
+            }
+            else {
+                document.getElementById("rank").innerHTML = "Rank: Computer🤖"
+            }
+        }
+                    /*
+            All Ranks:
+                Noobie🙄
+                Decent🙂
+                Pro😎
+                Computer🤖
+            */
+        function check_rank(key) {
+            if(key === "Noobie🙄") {
+                rl = 1
+                document.getElementById("rank").innerHTML = "Rank: Noobie🙄"
+            }
+            else if(key === "Decent🙂") {
+                rl = 2
+                document.getElementById("rank").innerHTML = "Rank: Decent🙂"
+            }
+            else if(key === "Pro😎") {
+                rl = 3
+                document.getElementById("rank").innerHTML = "Rank: Pro😎"
+            }
+            else {
+                rl = 4
+                document.getElementById("rank").innerHTML = "Rank: Computer🤖"
+            }
+        }
+        function credits() {
+            alert("Made by:\nSarthak Raymondal")
+        }
+        function ar() {
+            alert("About Rank\nRank helps to define what level of mental maths u can do.But what are the different ranks u may ask?")
+            alert("The different ranks are:\nNoobie🙄\nDecent🙂\nPro😎\nComputer🤖\nWhat do u have to do to get these ranks?")
+            alert("Noobie🙄\nNothing,cuz u are one intially")
+            alert("Decent🙂\nNo of qs to attend: >10\nCorrect: >10\nCorrect rate%:85%\nStreak: >10\nNo of equation signs: >0\nLeast time taken: <2\nMax: >2")
+            alert("Pro😎\nNo of qs to attend: >20\nCorrect: >19\nCorrect rate%:90%\nStreak: >19\nNo of equation signs: >2\nLeast time taken: <1.10\nMax no: >5")
+            alert("Computer🤖\nNo of qs to attend: >30\nCorrect: >29\nCorrect rate%:95%\nStreak: >29\nNo of equation signs: 4(+,-,*,/ all of them)\nLeast time taken: <1.10\nAverage time taken: <2\nMax no: >14")
+        }
+        </script>
+</body>
+</html>
